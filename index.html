@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Typing Speed Test</title>
+    <style>
+      :root {
+        --bg: #f7fafc;
+        --text: #1a202c;
+        --accent: #3182ce;
+        --card: #ffffff;
+        --border: #e2e8f0;
+        --shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        --correct: #38a169;
+        --incorrect: #e53e3e;
+      }
+
+      body.dark {
+        --bg: #1a202c;
+        --text: #e2e8f0;
+        --accent: #63b3ed;
+        --card: #2d3748;
+        --border: #4a5568;
+        --correct: #68d391;
+        --incorrect: #f56565;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: "Inter", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        transition: background 0.3s, color 0.3s;
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 30px;
+        background: var(--card);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+      }
+
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      header h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin: 0;
+      }
+
+      #toggleDark {
+        font-size: 1.5rem;
+        cursor: pointer;
+        background: none;
+        border: none;
+        color: var(--text);
+        transition: transform 0.2s;
+      }
+
+      #toggleDark:hover {
+        transform: scale(1.1);
+      }
+
+      .controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      select {
+        padding: 8px;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--text);
+      }
+
+      input[type="text"] {
+        padding: 12px;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--text);
+        width: 200px;
+      }
+
+      input[type="text"]:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      #textDisplay {
+        margin: 20px 0;
+        padding: 15px;
+        background: var(--bg);
+        border-radius: 10px;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        min-height: 100px;
+      }
+
+      #textDisplay span.correct {
+        color: var(--correct);
+      }
+
+      #textDisplay span.incorrect {
+        color: var(--incorrect);
+        text-decoration: underline;
+      }
+
+      #textDisplay span.current {
+        background: #cbd5e0;
+        border-radius: 2px;
+      }
+
+      #textInput {
+        width: 100%;
+        height: 100px;
+        padding: 12px;
+        font-size: 1rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: var(--card);
+        color: var(--text);
+        resize: none;
+      }
+
+      #textInput:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: var(--border);
+        border-radius: 4px;
+        margin: 10px 0;
+        overflow: hidden;
+      }
+
+      .progress {
+        height: 100%;
+        background: var(--accent);
+        width: 0;
+        transition: width 0.3s;
+      }
+
+      .results {
+        margin: 20px 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+      }
+
+      .results p {
+        font-weight: 600;
+        margin: 0;
+        font-size: 1rem;
+      }
+
+      .results span {
+        color: var(--accent);
+      }
+
+      .buttons {
+        display: flex;
+        gap: 10px;
+      }
+
+      button {
+        background: var(--accent);
+        color: white;
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.3s, transform 0.2s;
+      }
+
+      button:hover {
+        background: #2b6cb0;
+        transform: translateY(-2px);
+      }
+
+      .leaderboard {
+        margin-top: 30px;
+        padding: 20px;
+        background: var(--card);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+      }
+
+      .leaderboard h3 {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 15px;
+        color: var(--text);
+      }
+
+      .leaderboard table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+      }
+
+      .leaderboard th,
+      .leaderboard td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .leaderboard th {
+        font-weight: 600;
+        color: var(--accent);
+      }
+
+      .leaderboard td {
+        color: var(--text);
+      }
+
+      footer {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 0.9rem;
+        color: var(--text);
+      }
+
+      @media (max-width: 600px) {
+        .container {
+          margin: 20px;
+          padding: 20px;
+        }
+
+        header h2 {
+          font-size: 1.5rem;
+        }
+
+        .controls {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        input[type="text"] {
+          width: 100%;
+        }
+
+        .leaderboard table {
+          font-size: 0.85rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h2>Typing Speed Test</h2>
+        <button id="toggleDark">🌙</button>
+      </header>
+
+      <div class="controls">
+        <input type="text" id="username" placeholder="Enter your name" />
+        <select id="difficulty">
+          <option value="easy">Easy</option>
+          <option value="medium">Medium</option>
+          <option value="hard">Hard</option>
+        </select>
+      </div>
+
+      <div id="textDisplay"></div>
+      <div class="progress-bar">
+        <div class="progress" id="progress"></div>
+      </div>
+      <textarea
+        id="textInput"
+        placeholder="Start typing here..."
+        disabled
+      ></textarea>
+
+      <div class="results">
+        <p>Time Left: <span id="timer">60</span> seconds</p>
+        <p>WPM: <span id="wpm">0</span></p>
+        <p>Accuracy: <span id="accuracy">0</span>%</p>
+      </div>
+
+      <div class="buttons">
+        <button onclick="startTest()">Start Test</button>
+        <button onclick="restartTest()">Restart</button>
+      </div>
+
+      <div class="leaderboard">
+        <h3>Leaderboard</h3>
+        <table id="leaderboardTable">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Name</th>
+              <th>WPM</th>
+              <th>Accuracy</th>
+              <th>Time</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboardBody"></tbody>
+        </table>
+      </div>
+
+      <footer>Developed by: Sufal Basak with ❤️</footer>
+    </div>
+
+    <script>
+      const toggleDark = document.getElementById("toggleDark");
+      const textDisplay = document.getElementById("textDisplay");
+      const textInput = document.getElementById("textInput");
+      const timerEl = document.getElementById("timer");
+      const wpmEl = document.getElementById("wpm");
+      const accuracyEl = document.getElementById("accuracy");
+      const username = document.getElementById("username");
+      const difficulty = document.getElementById("difficulty");
+      const progress = document.getElementById("progress");
+      const leaderboardBody = document.getElementById("leaderboardBody");
+
+      const sentences = {
+        easy: [
+          "The sun sets slowly behind the mountain.",
+          "A quick fox fled from danger.",
+          "Typing is a skill that improves with practice.",
+          "The river flows gently through the valley.",
+          "Birds sing sweetly in the morning light.",
+          "Stars twinkle brightly in the night sky.",
+          "A gentle breeze rustles the leaves.",
+          "The cat sleeps peacefully on the mat.",
+          "Children play happily in the park.",
+          "The moon rises over the calm ocean.",
+        ],
+        medium: [
+          "JavaScript is a versatile programming language for web development.",
+          "Efficient typing enhances productivity and communication.",
+          "The intricate details of the project required careful planning.",
+          "Modern technology transforms the way we interact daily.",
+          "Collaboration is key to successful team dynamics.",
+          "Strategic planning ensures long-term business success.",
+          "The artist painted with vivid colors and bold strokes.",
+          "Data analysis drives informed decision-making processes.",
+          "The novel captivated readers with its compelling plot.",
+          "Effective communication fosters strong workplace relationships.",
+        ],
+        hard: [
+          "Navigating the complexities of software engineering demands a profound understanding of algorithms, data structures, and system architecture, coupled with precise transcription skills.",
+          "The symbiotic relationship between cognitive processing and mechanical dexterity is exemplified in high-speed typing, where accuracy and speed must coexist harmoniously.",
+          "In the ever-evolving landscape of technological innovation, proficient typists leverage their skills to streamline workflows, ensuring seamless integration across multifaceted digital platforms.",
+          "Mastery of typing under pressure requires not only technical prowess but also mental fortitude, as each keystroke must align perfectly with the intended output amidst stringent time constraints.",
+          "The confluence of linguistic precision and rapid execution in typing tests challenges even seasoned professionals, necessitating a disciplined approach to both practice and performance.",
+          "Amidst the rapid advancement of artificial intelligence, typists must adapt to increasingly sophisticated interfaces, balancing speed with meticulous attention to detail in dynamic environments.",
+          "The interdisciplinary nature of modern project management necessitates exceptional typing proficiency to document intricate processes, ensuring clarity and coherence across diverse teams.",
+          "Crafting eloquent prose under time constraints exemplifies the pinnacle of typing expertise, where fluency, accuracy, and stylistic finesse converge to produce exemplary written communication.",
+          "In the realm of cybersecurity, rapid and precise typing is critical for executing complex command sequences, mitigating threats with unparalleled efficiency and precision.",
+          "The relentless pursuit of typing excellence involves rigorous practice, cognitive adaptability, and an unwavering commitment to mastering the nuances of digital communication.",
+        ],
+      };
+
+      let sampleText = "";
+      let timer = 60;
+      let interval = null;
+      let started = false;
+      let typingStarted = false;
+      let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+
+      function updateLeaderboard(name, wpm, accuracy, time) {
+        leaderboard.push({ name, wpm, accuracy, time: 60 - time });
+        leaderboard.sort((a, b) => b.wpm - a.wpm || b.accuracy - a.accuracy);
+        leaderboard = leaderboard.slice(0, 5);
+        localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+        displayLeaderboard();
+      }
+
+      function displayLeaderboard() {
+        leaderboardBody.innerHTML = "";
+        leaderboard.forEach((entry, index) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${entry.name}</td>
+            <td>${entry.wpm}</td>
+            <td>${entry.accuracy}%</td>
+            <td>${entry.time}s</td>
+          `;
+          leaderboardBody.appendChild(row);
+        });
+      }
+
+      displayLeaderboard();
+
+      toggleDark.onclick = () => {
+        document.body.classList.toggle("dark");
+        toggleDark.textContent = document.body.classList.contains("dark")
+          ? "☀️"
+          : "🌙";
+      };
+
+      function startTest() {
+        if (!username.value.trim()) {
+          alert("Please enter your name to start the test.");
+          return;
+        }
+        const selectedDifficulty = difficulty.value;
+        sampleText =
+          sentences[selectedDifficulty][
+            Math.floor(Math.random() * sentences[selectedDifficulty].length)
+          ];
+        renderTextDisplay();
+        textInput.disabled = false;
+        textInput.value = "";
+        textInput.focus();
+        timer = 60;
+        timerEl.textContent = timer;
+        wpmEl.textContent = 0;
+        accuracyEl.textContent = 0;
+        progress.style.width = "0%";
+        started = true;
+        typingStarted = false;
+
+        if (interval) clearInterval(interval);
+        interval = setInterval(() => {
+          timer--;
+          timerEl.textContent = timer;
+          if (timer <= 0) {
+            stopTest();
+          }
+        }, 1000);
+      }
+
+      function restartTest() {
+        if (!username.value.trim()) {
+          alert("Please enter your name to restart the test.");
+          return;
+        }
+        startTest();
+      }
+
+      function renderTextDisplay(typedText = "") {
+        textDisplay.innerHTML = "";
+        sampleText.split("").forEach((char, i) => {
+          const span = document.createElement("span");
+          if (i < typedText.length) {
+            span.className = typedText[i] === char ? "correct" : "incorrect";
+          } else if (i === typedText.length) {
+            span.className = "current";
+          }
+          span.textContent = char;
+          textDisplay.appendChild(span);
+        });
+      }
+
+      function stopTest() {
+        if (interval) {
+          clearInterval(interval);
+        }
+        textInput.disabled = true;
+        started = false;
+        typingStarted = false;
+        const typedText = textInput.value;
+        const correctChars = sampleText
+          .split("")
+          .filter((char, i) => typedText[i] === char).length;
+        const accuracy = ((correctChars / sampleText.length) * 100).toFixed(0);
+        const wordsTyped = typedText.trim().split(" ").filter(Boolean).length;
+        const wpm = Math.round((wordsTyped / (60 - timer)) * 60);
+        updateLeaderboard(
+          username.value,
+          isNaN(wpm) ? 0 : wpm,
+          accuracy,
+          timer
+        );
+      }
+
+      textInput.addEventListener("input", () => {
+        if (!started) return;
+        typingStarted = true;
+        const typedText = textInput.value;
+        renderTextDisplay(typedText);
+        const correctChars = sampleText
+          .split("")
+          .filter((char, i) => typedText[i] === char).length;
+        const accuracy = ((correctChars / sampleText.length) * 100).toFixed(0);
+        const wordsTyped = typedText.trim().split(" ").filter(Boolean).length;
+        const wpm = Math.round((wordsTyped / (60 - timer)) * 60);
+        const progressPercent = (typedText.length / sampleText.length) * 100;
+
+        accuracyEl.textContent = isNaN(accuracy) ? 0 : accuracy;
+        wpmEl.textContent = isNaN(wpm) ? 0 : wpm;
+        progress.style.width = `${progressPercent}%`;
+
+        if (typedText === sampleText) {
+          stopTest();
+        }
+      });
+
+      function resetTest() {
+        if (interval) {
+          clearInterval(interval);
+        }
+        textInput.disabled = true;
+        textDisplay.innerHTML = "";
+        timerEl.textContent = 60;
+        wpmEl.textContent = 0;
+        accuracyEl.textContent = 0;
+        username.value = "";
+        progress.style.width = "0%";
+        started = false;
+        typingStarted = false;
+      }
+    </script>
+  </body>
+</html>
